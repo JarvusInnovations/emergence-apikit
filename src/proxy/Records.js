@@ -1,7 +1,7 @@
 /*jslint browser: true, undef: true *//*global Ext*/
 /* This class has altered for backwards compatibility with ExtJS 4.2.1 */
-Ext.define('Emergence.ext.proxy.Records', {
-    extend: 'Jarvus.ext.proxy.API',
+Ext.define('Emergence.proxy.Records', {
+    extend: 'Jarvus.proxy.API',
     alias: 'proxy.records',
     requires: [
         'Emergence.util.API',
@@ -55,7 +55,7 @@ Ext.define('Emergence.ext.proxy.Records', {
                 params: Ext.applyIf(params, me.getParams(operation)),
                 headers: me.headers
             });
-        
+
         //compatibility for ExtJS 4.2.1
         if (Ext.isFunction(request.setMethod)) {
             request.setMethod(me.getMethod(request));
