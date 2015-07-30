@@ -106,5 +106,35 @@ Ext.define('Emergence.util.AbstractAPI', {
                 Ext.callback(callback, scope, [false, response]);
             }
         });
+    },
+
+    /**
+     * Upload an HTML5 file object
+     * @param {Object} the html5 file object
+     * @param {Function} the function to call after the response
+     * @param {Object} the scope for the callback function
+     */
+    uploadMedia: function(file, callback, scope) {
+        var me = this;
+        var formData = new FormData();
+        
+        formData.append('mediaFile', file);
+        
+        me.request({
+            method: 'POST',
+            url: '/media/upload',
+            headers: {
+                // Setting Content-Type to null allows the browser to automatically set Content-Type. 
+                // Must-have for file uploads using the FormData object.
+                'Content-Type': null
+            },
+            rawData: formData,
+            success: function(response) {
+                var success = response.data && response.data.success,
+                    mediaData = success && response.data.data;
+
+                Ext.callback(callback, scope, [success, response, mediaData]);
+            }
+        });
     }
 });
