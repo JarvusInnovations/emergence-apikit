@@ -148,5 +148,18 @@ Ext.define('Emergence.proxy.Records', {
         }
 
         return out.join(' ');
+    },
+
+    getMethod: function(request) {
+        switch (request.getAction()) {
+            case 'create':
+                return 'POST';
+            case 'read':
+                return 'GET';
+            case 'update':
+                return 'POST';
+            case 'destroy':
+                return 'DELETE';
+        }
     }
 });
