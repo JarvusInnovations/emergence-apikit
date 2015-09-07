@@ -5,7 +5,6 @@ Ext.define('Emergence.proxy.Records', {
     alias: 'proxy.records',
     requires: [
         'Emergence.util.API',
-        'Jarvus.proxy.API',
         'Ext.data.reader.Json',
         'Ext.data.writer.Json',
         'Ext.data.Request'
