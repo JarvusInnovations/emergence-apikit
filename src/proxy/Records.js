@@ -1,11 +1,11 @@
 /*jslint browser: true, undef: true *//*global Ext*/
 /* This class has altered for backwards compatibility with ExtJS 4.2.1 */
 Ext.define('Emergence.proxy.Records', {
-    extend: 'Emergence.proxy.API',
+    extend: 'Jarvus.proxy.API',
     alias: 'proxy.records',
     requires: [
         'Emergence.util.API',
-        'Emergence.proxy.API',
+        'Jarvus.proxy.API',
         'Ext.data.reader.Json',
         'Ext.data.writer.Json',
         'Ext.data.Request'
@@ -149,5 +149,18 @@ Ext.define('Emergence.proxy.Records', {
         }
 
         return out.join(' ');
+    },
+
+    getMethod: function(request) {
+        switch (request.getAction()) {
+            case 'create':
+                return 'POST';
+            case 'read':
+                return 'GET';
+            case 'update':
+                return 'POST';
+            case 'destroy':
+                return 'DELETE';
+        }
     }
 });
