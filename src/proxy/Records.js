@@ -28,6 +28,7 @@ Ext.define('Emergence.proxy.Records', {
     startParam: 'offset',
     limitParam: 'limit',
     sortParam: 'sort',
+    directionParam: 'dir',
     filterParam: 'q',
     simpleSortMode: true,
     reader: {
