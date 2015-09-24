@@ -44,6 +44,9 @@ Ext.define('Emergence.proxy.Records', {
         allowSingle: false
     },
 
+    /**
+     * TODO: overriding this entire method may no longer be necessary given the new Jarvus.proxy.API's template methods
+     */
     buildRequest: function(operation) {
         var me = this,
             initialParams = Ext.apply({}, (Ext.isFunction(operation.getParams) ? operation.getParams() : operation.params)),
@@ -54,7 +57,8 @@ Ext.define('Emergence.proxy.Records', {
                 records: operation.getRecords(),
                 operation: operation,
                 params: Ext.applyIf(params, me.getParams(operation)),
-                headers: me.headers
+                headers: me.headers,
+                withCredentials: true
             });
 
         //compatibility for ExtJS 4.2.1
