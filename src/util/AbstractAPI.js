@@ -6,6 +6,7 @@
  */
 Ext.define('Emergence.util.AbstractAPI', {
     extend: 'Jarvus.util.AbstractAPI',
+    alternateClassName: 'Emergence.ext.util.AbstractAPI',
 
     config: {
         sessionData: null
@@ -117,14 +118,14 @@ Ext.define('Emergence.util.AbstractAPI', {
     uploadMedia: function(file, callback, scope) {
         var me = this;
         var formData = new FormData();
-        
+
         formData.append('mediaFile', file);
-        
+
         me.request({
             method: 'POST',
             url: '/media/upload',
             headers: {
-                // Setting Content-Type to null allows the browser to automatically set Content-Type. 
+                // Setting Content-Type to null allows the browser to automatically set Content-Type.
                 // Must-have for file uploads using the FormData object.
                 'Content-Type': null
             },

@@ -3,6 +3,7 @@
 Ext.define('Emergence.proxy.Records', {
     extend: 'Jarvus.proxy.API',
     alias: 'proxy.records',
+    alternateClassName: 'Emergence.ext.proxy.Records',
     requires: [
         'Emergence.util.API',
         'Ext.data.reader.Json',
