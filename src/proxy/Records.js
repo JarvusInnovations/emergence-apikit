@@ -36,7 +36,8 @@ Ext.define('Emergence.proxy.Records', {
         type: 'json',
         rootProperty: 'data',
         totalProperty: 'total',
-        messageProperty: 'message'
+        messageProperty: 'message',
+        keepRawData: true
     },
     writer:{
         type: 'json',
