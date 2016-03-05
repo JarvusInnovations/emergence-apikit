@@ -150,7 +150,7 @@ Ext.define('Emergence.proxy.Records', {
 
         for (; i < length; i++) {
             filterData = filters[i].serialize();
-            filterValue = filterData.value;
+            filterValue = filterData.value.toString();
             out[i] = filterData.property+ ':' + (filterValue.match(/\s/) ? '"' + filterValue + '"' : filterValue);
         }
 
