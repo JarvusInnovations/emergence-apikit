@@ -102,6 +102,7 @@ Ext.define('Emergence.util.AbstractAPI', {
             url: '/login/logout',
             success: function(response) {
                 Ext.callback(callback, scope, [true, response]);
+                this.fireEvent('logout', response.data);
             },
             exception: function(response) {
                 Ext.callback(callback, scope, [false, response]);
