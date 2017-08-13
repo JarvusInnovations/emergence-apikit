@@ -60,7 +60,8 @@ Ext.define('Emergence.proxy.Records', {
                 operation: operation,
                 params: Ext.applyIf(params, me.getParams(operation)),
                 headers: me.headers,
-                withCredentials: true
+                withCredentials: true,
+                timeout: me.getTimeout()
             });
 
         //compatibility for ExtJS 4.2.1
