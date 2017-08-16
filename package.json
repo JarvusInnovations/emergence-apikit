@@ -1,14 +1,23 @@
 {
-    "name": "emergence-apikit",
-    "type": "code",
-    "creator": "anonymous",
-    "summary": "Short summary",
-    "detailedDescription": "Long description of package",
-    "version": "1.0.0",
-    "compatVersion": "1.0.0",
-    "format": "1",
-    "local": true,
-    "requires": [
-        "jarvus-apikit"
-    ]
+  "name": "emergence-apikit",
+  "type": "code",
+  "creator": "anonymous",
+  "summary": "Short summary",
+  "detailedDescription": "Long description of package",
+  "version": "1.0.0",
+  "compatVersion": "1.0.0",
+  "format": "1",
+  "local": true,
+  "requires": [
+    "jarvus-apikit"
+  ],
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^3.5.0",
+    "mocha-extjs": "^0.1.71",
+    "mocha-phantomjs": "^4.1.0"
+  },
+  "scripts": {
+    "test": "mocha-phantomjs test/index.html"
+  }
 }

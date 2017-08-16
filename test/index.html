@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test harness</title>
+
+        <!-- mocha library -->
+        <link href="../node_modules/mocha/mocha.css" rel="stylesheet">
+        <script src="../node_modules/expect.js/index.js"></script>
+        <script src="../node_modules/mocha/mocha.js"></script>
+
+        <!-- mocha-extjs library -->
+        <link href="../node_modules/mocha-extjs/dist/mocha-extjs.css" rel="stylesheet">
+        <script src="../node_modules/mocha-extjs/dist/mocha-extjs.js"></script>
+
+        <!-- extjs library -->
+        <script src="./ext/build/ext-all-debug.js"></script>
+    </head>
+    <body>
+        <!-- mocha ui -->
+        <div id="mocha"></div>
+
+        <script>
+            // necessary of mocha-phantomjs
+            if (typeof window.initMochaPhantomJS === 'function') {
+                window.initMochaPhantomJS();
+            }
+
+            // setup mocha before first test-suite!
+            mocha.setup('bdd');
+        </script>
+
+        <!-- test suites -->
+        <script src="./suites/010-environment.js"></script>
+        <script src="./suites/020-build-request.js"></script>
+
+        <!-- configure and run Mocha.js -->
+        <script>
+            mocha.checkLeaks();
+            mocha.globals(['Ext', 'Emergence']);
+
+            var eTT = new MochaExtJs();
+
+            // load application
+            Ext.Loader.setPath({
+                Jarvus: './packages/jarvus-apikit/src',
+                Emergence: '../src'
+            });
+            Ext.Loader.require('Emergence.proxy.Records');
+
+            Ext.onReady(function() {
+                mocha.run();
+            });
+        </script>
+    </body>
+</html>
