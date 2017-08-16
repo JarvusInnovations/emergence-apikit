@@ -58,35 +58,21 @@ Ext.define('Emergence.proxy.Records', {
                 action: (Ext.isFunction(operation.getAction) ? operation.getAction() : operation.action),
                 records: operation.getRecords(),
                 operation: operation,
-                params: Ext.applyIf(params, me.getParams(operation)),
-                headers: me.headers,
-                withCredentials: true,
-                timeout: me.getTimeout()
+                params: Ext.applyIf(params, me.getParams(operation))
             });
 
-        //compatibility for ExtJS 4.2.1
-        if (Ext.isFunction(request.setMethod)) {
-            request.setMethod(me.getMethod(request));
-        } else {
-            request.method = me.getMethod(request);
-        }
-
-        if (Ext.isFunction(request.setUrl)) {
-            request.setUrl(operation.config.url || me.buildUrl(request));
-        } else {
-            request.url = (operation.config.url || me.buildUrl(request));
-        }
+        request.setUrl(operation.getUrl() || me.buildUrl(request));
+        request.setMethod(me.getMethod(request));
+        request.setHeaders(me.getHeaders(request));
+        request.setTimeout(me.getTimeout(request));
+        request.setWithCredentials(me.getWithCredentials());
 
         // compatibility with Jarvus.ext.override.proxy.DirtyParams since we're entirely replacing the buildRequest method it overrides
         if (Ext.isFunction(me.clearParamsDirty)) {
             me.clearParamsDirty();
         }
 
-        if (Ext.isFunction(operation.setRequest)) {
-            operation.setRequest(request);
-        } else {
-            operation.request = request;
-        }
+        operation.setRequest(request);
 
         return request;
     },
