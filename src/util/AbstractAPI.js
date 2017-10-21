@@ -111,6 +111,31 @@ Ext.define('Emergence.util.AbstractAPI', {
     },
 
     /**
+     * Reset password for remote instance
+     * @param {String} username The reset username or email address
+     * @param {Function} callback A function to call and pass the new client data to when it is available
+     * @param {Object} scope Scope for the callback function
+     */
+    recoverPassword: function(username, callback, scope) {
+        var me = this;
+        
+        me.request({
+            url: '/register/recover',
+            method: 'POST',
+            params: {
+                'username': username
+            },
+            success: function(response) {
+                Ext.callback(callback, scope, [true, response]);
+                me.fireEvent('logout', response.data);
+            },
+            exception: function(response) {
+                Ext.callback(callback, scope, [false, response]);
+            }
+        });
+    }
+    
+    /**
      * Upload an HTML5 file object
      * @param {Object} the html5 file object
      * @param {Function} the function to call after the response
