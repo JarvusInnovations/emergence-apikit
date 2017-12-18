@@ -1,5 +1,3 @@
-/*jslint browser: true, undef: true *//*global Ext*/
-/* This class has altered for backwards compatibility with ExtJS 4.2.1 */
 Ext.define('Emergence.proxy.Records', {
     extend: 'Jarvus.proxy.API',
     alias: 'proxy.records',
@@ -15,36 +13,37 @@ Ext.define('Emergence.proxy.Records', {
         connection: 'Emergence.util.API',
         include: null,
         relatedTable: null,
-        summary: false
+        summary: false,
+
+        /**
+         * @cfg The base URL for the managed collection (e.g. '/people')
+         * @required
+         */
+        url: null,
+
+        idParam: 'ID',
+        pageParam: false,
+        startParam: 'offset',
+        limitParam: 'limit',
+        sortParam: 'sort',
+        directionParam: 'dir',
+        filterParam: 'q',
+        simpleSortMode: true,
+        reader: {
+            type: 'json',
+            rootProperty: 'data',
+            totalProperty: 'total',
+            messageProperty: 'message',
+            keepRawData: true
+        },
+        writer:{
+            type: 'json',
+            rootProperty: 'data',
+            writeAllFields: false,
+            allowSingle: false
+        }
     },
 
-    /**
-     * @cfg The base URL for the managed collection (e.g. '/people')
-     * @required
-     */
-    url: null,
-
-    idParam: 'ID',
-    pageParam: false,
-    startParam: 'offset',
-    limitParam: 'limit',
-    sortParam: 'sort',
-    directionParam: 'dir',
-    filterParam: 'q',
-    simpleSortMode: true,
-    reader: {
-        type: 'json',
-        rootProperty: 'data',
-        totalProperty: 'total',
-        messageProperty: 'message',
-        keepRawData: true
-    },
-    writer:{
-        type: 'json',
-        rootProperty: 'data',
-        writeAllFields: false,
-        allowSingle: false
-    },
 
     /**
      * TODO: overriding this entire method may no longer be necessary given the new Jarvus.proxy.API's template methods
