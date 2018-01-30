@@ -16,6 +16,7 @@ Ext.define('Emergence.proxy.Records', {
         relatedTable: null,
         summary: false,
         injectRelatedTables: true,
+        injectModels: false,
 
         /**
          * @cfg The base URL for the managed collection (e.g. '/people')
@@ -278,16 +279,35 @@ Ext.define('Emergence.proxy.Records', {
         var me = this,
             relatedCollections = me.relatedCollections,
             relatedTableConfigs = me.getRelatedTable(),
+            injectRelatedTables = me.getInjectRelatedTables(),
+            injectModels = me.getInjectModels(),
+            rootProperty = me.getReader().getRootProperty(),
             data = me.callParent(arguments),
             relatedData = data.related,
-            length, i = 0, relationship;
+            length, i = 0, config, relationship, relatedCollection, localKey,
+            recordsData, recordsLength, recordIndex, recordData, relatedRecord;
 
         if (relatedTableConfigs && relatedData) {
             length = relatedTableConfigs.length;
 
             for (; i < length; i++) {
-                relationship = relatedTableConfigs[i].relationship;
-                relatedCollections[relationship].add(relatedData[relationship]);
+                config = relatedTableConfigs[i];
+                relationship = config.relationship;
+                relatedCollection = relatedCollections[relationship];
+                relatedCollection.add(relatedData[relationship]);
+
+                if (injectRelatedTables) {
+                    localKey = config.localKey;
+                    recordsData = rootProperty ? data[rootProperty] : data;
+                    recordsLength = recordsData.length;
+                    recordIndex = 0;
+
+                    for (; recordIndex < recordsLength; recordIndex++) {
+                        recordData = recordsData[recordIndex];
+                        relatedRecord = relatedCollection.getByKey(recordData[localKey]);
+                        recordData[relationship] = !injectModels && relatedRecord instanceof Ext.data.Model ? relatedRecord.getData() : relatedRecord;
+                    }
+                }
             }
         }
 
