@@ -1,5 +1,3 @@
-/*jslint browser: true, undef: true*//*global Ext*/
-
 /**
  * A default singleton instance for {@link Emergence.util.AbstractAPI}
  */

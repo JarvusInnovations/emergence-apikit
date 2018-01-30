@@ -1,5 +1,3 @@
-/*jslint browser: true, undef: true*//*global Ext*/
-
 /**
  * @abstract
  * An abstract class for singletons that facilitates communication with backend services on a local or remote emergence server
@@ -44,12 +42,11 @@ Ext.define('Emergence.util.AbstractAPI', {
             url: '/login',
             method: 'GET',
             success: function(response) {
-                if(response.data && response.data.success) {
+                if (response.data && response.data.success) {
                     me.setSessionData(response.data.data);
                     Ext.callback(callback, scope, [true, response]);
                     me.fireEvent('login', response.data.data);
-                }
-                else {
+                } else {
                     Ext.callback(callback, scope, [false, response]);
                 }
             },
@@ -117,8 +114,8 @@ Ext.define('Emergence.util.AbstractAPI', {
      * @param {Object} the scope for the callback function
      */
     uploadMedia: function(file, callback, scope) {
-        var me = this;
-        var formData = new FormData();
+        var me = this,
+            formData = new FormData();
 
         formData.append('mediaFile', file);
 

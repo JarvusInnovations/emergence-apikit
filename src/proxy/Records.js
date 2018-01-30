@@ -36,7 +36,7 @@ Ext.define('Emergence.proxy.Records', {
             messageProperty: 'message',
             keepRawData: true
         },
-        writer:{
+        writer: {
             type: 'json',
             rootProperty: 'data',
             writeAllFields: false,
@@ -50,11 +50,11 @@ Ext.define('Emergence.proxy.Records', {
      */
     buildRequest: function(operation) {
         var me = this,
-            initialParams = Ext.apply({}, (Ext.isFunction(operation.getParams) ? operation.getParams() : operation.params)),
+            initialParams = Ext.apply({}, Ext.isFunction(operation.getParams) ? operation.getParams() : operation.params),
             // Clone params right now so that they can be mutated at any point further down the call stack
-            params = Ext.applyIf(initialParams, (Ext.isFunction(me.getExtraParams) ? me.getExtraParams() : me.extraParams) || {}),
+            params = Ext.applyIf(initialParams, Ext.isFunction(me.getExtraParams) ? me.getExtraParams() : me.extraParams || {}),
             request = new Ext.data.Request({
-                action: (Ext.isFunction(operation.getAction) ? operation.getAction() : operation.action),
+                action: Ext.isFunction(operation.getAction) ? operation.getAction() : operation.action,
                 records: operation.getRecords(),
                 operation: operation,
                 params: Ext.applyIf(params, me.getParams(operation))
@@ -83,7 +83,7 @@ Ext.define('Emergence.proxy.Records', {
             baseUrl = me.getUrl(request),
             action = Ext.isFunction(request.getAction) ? request.getAction() : request.action;
 
-        switch(action) {
+        switch (action) {
             case 'read':
                 if (readId && (idParam == 'ID' || idParam == 'Handle')) {
                     baseUrl += '/' + encodeURIComponent(readId);
@@ -96,6 +96,8 @@ Ext.define('Emergence.proxy.Records', {
             case 'destroy':
                 baseUrl += '/destroy';
                 break;
+            default:
+                Ext.Logger.error('Unhandled request action');
         }
 
         return baseUrl;
@@ -107,7 +109,7 @@ Ext.define('Emergence.proxy.Records', {
             relatedTable = me.getRelatedTable(),
             summary = me.getSummary(),
             idParam = me.idParam,
-            id = (typeof operation.getId == 'function' ? operation.getId() : operation.id),
+            id = typeof operation.getId == 'function' ? operation.getId() : operation.id,
             params = me.callParent(arguments);
 
         if (id && idParam != 'ID') {
@@ -151,6 +153,9 @@ Ext.define('Emergence.proxy.Records', {
             case 'update':
             case 'destroy':
                 return 'POST';
+            default:
+                Ext.Logger.error('Unhandled request action');
+                return null;
         }
     }
 });
