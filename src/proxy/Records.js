@@ -6,7 +6,8 @@ Ext.define('Emergence.proxy.Records', {
         'Emergence.util.API',
         'Ext.data.reader.Json',
         'Ext.data.writer.Json',
-        'Ext.data.Request'
+        'Ext.data.Request',
+        'Ext.util.Collection'
     ],
 
     config: {
@@ -14,6 +15,7 @@ Ext.define('Emergence.proxy.Records', {
         include: null,
         relatedTable: null,
         summary: false,
+        injectRelatedTables: true,
 
         /**
          * @cfg The base URL for the managed collection (e.g. '/people')
@@ -42,6 +44,12 @@ Ext.define('Emergence.proxy.Records', {
             writeAllFields: false,
             allowSingle: false
         }
+    },
+
+
+    constructor: function() {
+        this.relatedCollections = {};
+        this.callParent(arguments);
     },
 
 
@@ -107,8 +115,48 @@ Ext.define('Emergence.proxy.Records', {
         return relatedTableConfigs;
     },
 
-    updateRelatedTable: function(relatedTable) {
+    updateRelatedTable: function(relatedTable, oldRelatedTable) {
+        var relatedCollections = this.relatedCollections,
+            initializedTables = [],
+            relatedLength, relatedIndex, config, relationship, Model, foreignKey;
+
         this._relatedTableParam = relatedTable ? Ext.Array.pluck(relatedTable, 'relationship').join(',') : null;
+
+        if (relatedTable) {
+            relatedLength = relatedTable.length;
+            relatedIndex = 0;
+            for (; relatedIndex < relatedLength; relatedIndex++) {
+                config = relatedTable[relatedIndex];
+                relationship = config.relationship;
+                Model = config.model;
+                foreignKey = config.foreignKey;
+
+                relatedCollections[relationship] = new Ext.util.Collection({
+                    // eslint-disable-next-line no-loop-func
+                    decoder: Model ? function(data) {
+                        return new Model(data);
+                    } : null,
+                    // eslint-disable-next-line no-loop-func
+                    keyFn: Model ? null : function(data) {
+                        return data[foreignKey];
+                    }
+                });
+
+                initializedTables.push(relationship);
+            }
+        }
+
+        if (oldRelatedTable) {
+            relatedLength = oldRelatedTable.length;
+            relatedIndex = 0;
+            for (; relatedIndex < relatedLength; relatedIndex++) {
+                relationship = oldRelatedTable[relatedIndex].relationship;
+
+                if (initializedTables.indexOf(relationship) == -1) {
+                    delete relatedCollections[relationship];
+                }
+            }
+        }
     },
 
 
@@ -224,5 +272,25 @@ Ext.define('Emergence.proxy.Records', {
                 Ext.Logger.error('Unhandled request action');
                 return null;
         }
+    },
+
+    extractResponseData: function() {
+        var me = this,
+            relatedCollections = me.relatedCollections,
+            relatedTableConfigs = me.getRelatedTable(),
+            data = me.callParent(arguments),
+            relatedData = data.related,
+            length, i = 0, relationship;
+
+        if (relatedTableConfigs && relatedData) {
+            length = relatedTableConfigs.length;
+
+            for (; i < length; i++) {
+                relationship = relatedTableConfigs[i].relationship;
+                relatedCollections[relationship].add(relatedData[relationship]);
+            }
+        }
+
+        return data;
     }
 });
