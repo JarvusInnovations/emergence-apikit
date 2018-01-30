@@ -45,6 +45,73 @@ Ext.define('Emergence.proxy.Records', {
     },
 
 
+    // config handlers
+    applyInclude: function(include) {
+        if (!include || !include.length) {
+            return null;
+        }
+
+        return typeof include == 'string' ? [include] : include;
+    },
+
+    updateInclude: function(include) {
+        this._includeParam = include ? include.join(',') : null;
+    },
+
+    applyRelatedTable: function(relatedTable) {
+        var relatedTableConfigs = [],
+            length, i = 0, config, relationship, model;
+
+        if (!relatedTable || !relatedTable.length) {
+            return null;
+        }
+
+        if (!Ext.isArray(relatedTable)) {
+            relatedTable = [relatedTable];
+        }
+
+        length = relatedTable.length;
+        for (; i < length; i++) {
+            config = relatedTable[i];
+
+            if (typeof config == 'string') {
+                config = {
+                    relationship: config
+                };
+            }
+
+            relationship = config.relationship;
+
+            if (!relationship) {
+                Ext.Logger.error('relatedTable config missing required attribute relationship');
+            }
+
+            model = config.model;
+
+            if (typeof model == 'string') {
+                Ext.syncRequire(model);
+                model = config.model = Ext.ClassManager.get(model);
+            }
+
+            if (!config.foreignKey) {
+                config.foreignKey = model ? model.idProperty : 'ID';
+            }
+
+            if (!config.localKey) {
+                config.localKey = relationship + 'ID';
+            }
+
+            relatedTableConfigs.push(config);
+        }
+
+        return relatedTableConfigs;
+    },
+
+    updateRelatedTable: function(relatedTable) {
+        this._relatedTableParam = relatedTable ? Ext.Array.pluck(relatedTable, 'relationship').join(',') : null;
+    },
+
+
     /**
      * TODO: overriding this entire method may no longer be necessary given the new Jarvus.proxy.API's template methods
      */
@@ -105,8 +172,8 @@ Ext.define('Emergence.proxy.Records', {
 
     getParams: function(operation) {
         var me = this,
-            include = me.getInclude(),
-            relatedTable = me.getRelatedTable(),
+            includeParam = me._includeParam,
+            relatedTableParam = me._relatedTableParam,
             summary = me.getSummary(),
             idParam = me.idParam,
             id = typeof operation.getId == 'function' ? operation.getId() : operation.id,
@@ -116,12 +183,12 @@ Ext.define('Emergence.proxy.Records', {
             params[idParam] = id;
         }
 
-        if (include) {
-            params.include = Ext.isArray(include) ? include.join(',') : include;
+        if (includeParam) {
+            params.include = includeParam;
         }
 
-        if (relatedTable) {
-            params.relatedTable = Ext.isArray(relatedTable) ? relatedTable.join(',') : relatedTable;
+        if (relatedTableParam) {
+            params.relatedTable = relatedTableParam;
         }
 
         if (summary) {
