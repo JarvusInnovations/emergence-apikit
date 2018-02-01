@@ -166,11 +166,11 @@ Ext.define('Emergence.proxy.Records', {
      */
     buildRequest: function(operation) {
         var me = this,
-            initialParams = Ext.apply({}, Ext.isFunction(operation.getParams) ? operation.getParams() : operation.params),
+            initialParams = Ext.apply({}, typeof operation.getParams == 'function' ? operation.getParams() : operation.params),
             // Clone params right now so that they can be mutated at any point further down the call stack
-            params = Ext.applyIf(initialParams, Ext.isFunction(me.getExtraParams) ? me.getExtraParams() : me.extraParams || {}),
+            params = Ext.applyIf(initialParams, typeof me.getExtraParams == 'function' ? me.getExtraParams() : me.extraParams || {}),
             request = new Ext.data.Request({
-                action: Ext.isFunction(operation.getAction) ? operation.getAction() : operation.action,
+                action: typeof operation.getAction == 'function' ? operation.getAction() : operation.action,
                 records: operation.getRecords(),
                 operation: operation,
                 params: Ext.applyIf(params, me.getParams(operation))
@@ -183,7 +183,7 @@ Ext.define('Emergence.proxy.Records', {
         request.setWithCredentials(me.getWithCredentials());
 
         // compatibility with Jarvus.ext.override.proxy.DirtyParams since we're entirely replacing the buildRequest method it overrides
-        if (Ext.isFunction(me.clearParamsDirty)) {
+        if (typeof me.clearParamsDirty == 'function') {
             me.clearParamsDirty();
         }
 
@@ -194,10 +194,10 @@ Ext.define('Emergence.proxy.Records', {
 
     buildUrl: function(request) {
         var me = this,
-            readId = Ext.isFunction(request.getOperation) ? request.getOperation().getId() : request.operation.id,
-            idParam = Ext.isFunction(me.getIdParam)? me.getIdParam() : me.idParam,
+            readId = typeof request.getOperation == 'function' ? request.getOperation().getId() : request.operation.id,
+            idParam = typeof me.getIdParam == 'function'? me.getIdParam() : me.idParam,
             baseUrl = me.getUrl(request),
-            action = Ext.isFunction(request.getAction) ? request.getAction() : request.action;
+            action = typeof request.getAction == 'function' ? request.getAction() : request.action;
 
         switch (action) {
             case 'read':
