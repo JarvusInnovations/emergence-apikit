@@ -194,16 +194,29 @@ Ext.define('Emergence.proxy.Records', {
 
     buildUrl: function(request) {
         var me = this,
-            readId = typeof request.getOperation == 'function' ? request.getOperation().getId() : request.operation.id,
-            idParam = typeof me.getIdParam == 'function'? me.getIdParam() : me.idParam,
             baseUrl = me.getUrl(request),
-            action = typeof request.getAction == 'function' ? request.getAction() : request.action;
+            action = typeof request.getAction == 'function' ? request.getAction() : request.action,
+            operation, id, idParam, handleParam;
 
         switch (action) {
             case 'read':
-                if (readId && (idParam == 'ID' || idParam == 'Handle')) {
-                    baseUrl += '/' + encodeURIComponent(readId);
+                operation = typeof request.getOperation == 'function' ? request.getOperation() : request.operation;
+
+                // use recordHandle if provided
+                id = operation.recordHandle;
+                if (id) {
+                    baseUrl += '/' + encodeURIComponent(id);
+                    break;
                 }
+
+                // apply id to path if idProperty is ID or Handle
+                id = typeof operation.getId == 'function' ? operation.getId() : operation.id;
+                idParam = typeof me.getIdParam == 'function'? me.getIdParam() : me.idParam;
+                handleParam = (typeof me.getModel == 'function' ? me.getModel() : me.model).handleProperty || 'Handle';
+                if (id && (idParam == 'ID' || idParam == handleParam)) {
+                    baseUrl += '/' + encodeURIComponent(id);
+                }
+
                 break;
             case 'create':
             case 'update':
