@@ -234,7 +234,7 @@ Ext.define('Emergence.proxy.Records', {
 
     getParams: function(operation) {
         var me = this,
-            includeParam = me._includeParam,
+            includeParam = operation.include,
             relatedTableParam = me._relatedTableParam,
             summary = me.getSummary(),
             idParam = me.idParam,
@@ -243,6 +243,14 @@ Ext.define('Emergence.proxy.Records', {
 
         if (id && idParam != 'ID') {
             params[idParam] = id;
+        }
+
+        if (includeParam) {
+            if (Ext.isArray(includeParam)) {
+                includeParam = includeParam.join(',');
+            }
+        } else {
+            includeParam = me._includeParam;
         }
 
         if (includeParam) {
