@@ -213,7 +213,7 @@ Ext.define('Emergence.proxy.Records', {
                 id = typeof operation.getId == 'function' ? operation.getId() : operation.id;
                 idParam = typeof me.getIdParam == 'function'? me.getIdParam() : me.idParam;
                 handleParam = (typeof me.getModel == 'function' ? me.getModel() : me.model).handleProperty || 'Handle';
-                if (id && (idParam == 'ID' || idParam == handleParam)) {
+                if (id && ((idParam == 'ID' && id > 0) || idParam == handleParam)) {
                     baseUrl += '/' + encodeURIComponent(id);
                 }
 
