@@ -333,5 +333,21 @@ Ext.define('Emergence.proxy.Records', {
         }
 
         return data;
+    },
+
+    setException: function(operation, response) {
+        var status = response.status,
+            responseData = response.data,
+            message = responseData && responseData.message;
+
+        if (!message) {
+            if (status == 400) {
+                message = 'The server rejected this operation, please check your input and try again. If this problem persists, please backup your work to another application and report this to your technical support contact';
+            } else {
+                message = 'This operation failed for an unexpected reason, please check your input and try again. If this problem persists, please backup your work to another application and report this to your technical support contact';
+            }
+        }
+
+        operation.setException(message);
     }
 });
