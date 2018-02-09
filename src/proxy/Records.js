@@ -177,6 +177,7 @@ Ext.define('Emergence.proxy.Records', {
             });
 
         request.setUrl(operation.getUrl() || me.buildUrl(request));
+        request.setUrlParams(me.getUrlParams(request));
         request.setMethod(me.getMethod(request));
         request.setHeaders(me.getHeaders(request));
         request.setTimeout(me.getTimeout(request));
@@ -235,8 +236,9 @@ Ext.define('Emergence.proxy.Records', {
         return baseUrl;
     },
 
-    getParams: function(operation) {
+    getUrlParams: function(request) {
         var me = this,
+            operation = typeof request.getOperation == 'function' ? request.getOperation() : request.operation,
             includeParam = operation.include,
             relatedTableParam = me._relatedTableParam,
             summary = me.getSummary(),
