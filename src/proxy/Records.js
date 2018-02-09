@@ -195,35 +195,38 @@ Ext.define('Emergence.proxy.Records', {
     buildUrl: function(request) {
         var me = this,
             baseUrl = me.getUrl(request),
+            idAppended = false,
             action = typeof request.getAction == 'function' ? request.getAction() : request.action,
-            operation, id, idParam, handleParam;
+            operation = typeof request.getOperation == 'function' ? request.getOperation() : request.operation,
+            id, idParam, handleParam;
+
+
+        id = operation.recordHandle;
+        if (id) {
+            // use recordHandle if provided
+            baseUrl += '/' + encodeURIComponent(id);
+            idAppended = true;
+        } else {
+            // apply id to path if idProperty is ID or Handle
+            id = typeof operation.getId == 'function' ? operation.getId() : operation.id;
+            idParam = typeof me.getIdParam == 'function'? me.getIdParam() : me.idParam;
+            handleParam = (typeof me.getModel == 'function' ? me.getModel() : me.model).handleProperty || 'Handle';
+
+            if (id && ((idParam == 'ID' && id > 0) || idParam == handleParam)) {
+                baseUrl += '/' + encodeURIComponent(id);
+                idAppended = true;
+            }
+        }
 
         switch (action) {
             case 'read':
-                operation = typeof request.getOperation == 'function' ? request.getOperation() : request.operation;
-
-                // use recordHandle if provided
-                id = operation.recordHandle;
-                if (id) {
-                    baseUrl += '/' + encodeURIComponent(id);
-                    break;
-                }
-
-                // apply id to path if idProperty is ID or Handle
-                id = typeof operation.getId == 'function' ? operation.getId() : operation.id;
-                idParam = typeof me.getIdParam == 'function'? me.getIdParam() : me.idParam;
-                handleParam = (typeof me.getModel == 'function' ? me.getModel() : me.model).handleProperty || 'Handle';
-                if (id && ((idParam == 'ID' && id > 0) || idParam == handleParam)) {
-                    baseUrl += '/' + encodeURIComponent(id);
-                }
-
                 break;
             case 'create':
             case 'update':
-                baseUrl += '/save';
+                baseUrl += idAppended ? '' : '/save';
                 break;
             case 'destroy':
-                baseUrl += '/destroy';
+                baseUrl += idAppended ? '/delete' : '/destroy';
                 break;
             default:
                 Ext.Logger.error('Unhandled request action');
