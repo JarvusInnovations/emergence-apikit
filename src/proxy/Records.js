@@ -320,6 +320,11 @@ Ext.define('Emergence.proxy.Records', {
                 config = relatedTableConfigs[i];
                 relationship = config.relationship;
                 relatedCollection = relatedCollections[relationship];
+
+                if (config.clearOnLoad) {
+                    relatedCollection.clear();
+                }
+
                 relatedCollection.add(relatedData[relationship]);
 
                 if (injectRelatedTables) {
