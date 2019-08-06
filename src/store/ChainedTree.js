@@ -123,8 +123,12 @@ Ext.define('Emergence.store.ChainedTree', {
 
 
     // event handlers
-    onSourceLoad: function(sourceStore, records) {
-        this.loadTreeRecords(records);
+    onSourceBeforeLoad: function(sourceStore, operation) {
+        this.fireEvent('beforeload', this, operation);
+    },
+
+    onSourceLoad: function(sourceStore, records, successful, operation) {
+        this.fireEvent('load', this, records, successful, operation);
     },
 
     onSourceUpdate: function (sourceStore, sourceRecord, operation, modifiedFieldNames) {
@@ -233,6 +237,26 @@ Ext.define('Emergence.store.ChainedTree', {
 
 
     // member methods
+    load: function(options) {
+        return this.getSource().load(options);
+    },
+
+    loadIfDirty: function(options) {
+        return this.getSource().loadIfDirty(options);
+    },
+
+    hasPendingLoad: function() {
+        return this.getSource().hasPendingLoad();
+    },
+
+    isLoaded: function() {
+        return this.getSource().isLoaded();
+    },
+
+    isLoading: function() {
+        return this.getSource().isLoading();
+    },
+
     /**
      * Load a flat array of records into the tree
      */
