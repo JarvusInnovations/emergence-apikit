@@ -20,7 +20,9 @@ Ext.define('Emergence.store.ChainedTree', {
         nodeParam: 'parent',
         defaultRootId: 0,
         root: {
-            expanded: true
+            expanded: true,
+            children: [],
+            leaf: true
         }
     },
 
@@ -206,6 +208,7 @@ Ext.define('Emergence.store.ChainedTree', {
             i = 0, record, parentId, parent;
 
         me.beginUpdate();
+
         rootNode.removeAll();
 
         for (; i < recordsLength; i++) {
@@ -219,6 +222,9 @@ Ext.define('Emergence.store.ChainedTree', {
                 Ext.Logger.warn('could not find parent for chained tree record');
             }
         };
+
+        rootNode.expand();
+
         me.endUpdate();
     },
 
