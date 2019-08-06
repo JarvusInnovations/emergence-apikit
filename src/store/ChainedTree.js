@@ -24,6 +24,52 @@ Ext.define('Emergence.store.ChainedTree', {
         }
     },
 
+    listeners: {
+        add: function(store, records) {
+            var me = this,
+                sourceStore = me.getSource(),
+                Model = sourceStore.getModel(),
+                fieldsMap = Model.getFieldsMap(),
+                recordsLength = records.length, recordIndex = 0, treeRecord,
+                toAdd = [], treeNodeData, data, fieldName, record;
+
+            for (; recordIndex < recordsLength; recordIndex++) {
+                treeRecord = records[recordIndex];
+
+                if (treeRecord.isRoot()) {
+                    continue;
+                }
+
+                if (!sourceStore.getById(treeRecord.getId())) {
+                    treeNodeData = treeRecord.getData();
+                    data = {};
+
+                    for (fieldName in treeNodeData) {
+                        if (fieldsMap[fieldName]) {
+                            data[fieldName] = treeNodeData[fieldName];
+                        }
+                    }
+
+                    record = new Model(data);
+
+                    if (treeRecord.modified) {
+                        record.modified = Ext.apply({}, treeRecord.modified);
+                    }
+
+                    record.dirty = treeRecord.dirty;
+                    record.dropped = treeRecord.dropped;
+                    record.phantom = treeRecord.phantom;
+
+                    toAdd.push(record);
+                }
+            }
+
+            if (toAdd.length) {
+                sourceStore.add(toAdd);
+            }
+        }
+    },
+
 
     // config handlers
     applySource: function(sourceStore) {
@@ -34,7 +80,8 @@ Ext.define('Emergence.store.ChainedTree', {
         sourceStore.on({
             scope: this,
             load: 'onSourceLoad',
-            update: 'onSourceUpdate'
+            update: 'onSourceUpdate',
+            add: 'onSourceAdd'
         });
 
         var Model = sourceStore.getModel(),
@@ -57,7 +104,7 @@ Ext.define('Emergence.store.ChainedTree', {
 
     onSourceUpdate: function (sourceStore, sourceRecord, operation, modifiedFieldNames) {
         var record = this.getById(sourceRecord.getId()),
-            fieldsLen, i = 0, fieldName,
+            fieldsLength, i = 0, fieldName,
             commit = false;
 
         switch (operation) {
@@ -69,9 +116,9 @@ Ext.define('Emergence.store.ChainedTree', {
                     break;
                 }
 
-                fieldsLen = modifiedFieldNames.length;
+                fieldsLength = modifiedFieldNames.length;
 
-                for (; i < fieldsLen; i++) {
+                for (; i < fieldsLength; i++) {
                     fieldName = modifiedFieldNames[i];
                     record.set(fieldName, sourceRecord.get(fieldName));
                 }
@@ -85,6 +132,24 @@ Ext.define('Emergence.store.ChainedTree', {
                     record.reject();
                 }
                 break;
+        }
+    },
+
+    onSourceAdd: function(sourceStore, records) {
+        var me = this,
+            recordsLength = records.length, recordIndex = 0, record,
+            toAdd = [];
+
+        for (; recordIndex < recordsLength; recordIndex++) {
+            record = records[recordIndex];
+
+            if (!me.getById(record.getId())) {
+                toAdd.push(me.cloneTreeRecord(record));
+            }
+        }
+
+        if (toAdd.length) {
+            me.add(toAdd);
         }
     },
 
@@ -133,12 +198,14 @@ Ext.define('Emergence.store.ChainedTree', {
      * Load a flat array of records into the tree
      */
     loadTreeRecords: function(records) {
-        var idProperty = this.getIdProperty(),
-            parentIdProperty = this.getParentIdProperty(),
-            rootNode = this.getRoot(),
+        var me = this,
+            idProperty = me.getIdProperty(),
+            parentIdProperty = me.getParentIdProperty(),
+            rootNode = me.getRoot(),
             recordsLength = records.length,
             i = 0, record, parentId, parent;
 
+        me.beginUpdate();
         rootNode.removeAll();
 
         for (; i < recordsLength; i++) {
@@ -147,11 +214,12 @@ Ext.define('Emergence.store.ChainedTree', {
             parent = parentId ? rootNode.findChild(idProperty, parentId, true) : rootNode;
 
             if (parent) {
-                parent.appendChild(this.cloneTreeRecord(record), true, true);
+                parent.appendChild(me.cloneTreeRecord(record), true, true);
             } else {
                 Ext.Logger.warn('could not find parent for chained tree record');
             }
         };
+        me.endUpdate();
     },
 
     /**
