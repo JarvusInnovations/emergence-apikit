@@ -18,7 +18,10 @@ Ext.define('Emergence.store.ChainedTree', {
         parentIdProperty: 'ParentID',
 
         nodeParam: 'parent',
-        defaultRootId: 0
+        defaultRootId: 0,
+        root: {
+            expanded: true
+        }
     },
 
 
@@ -132,7 +135,7 @@ Ext.define('Emergence.store.ChainedTree', {
     loadTreeRecords: function(records) {
         var idProperty = this.getIdProperty(),
             parentIdProperty = this.getParentIdProperty(),
-            rootNode = this.getRootNode(),
+            rootNode = this.getRoot(),
             recordsLength = records.length,
             i = 0, record, parentId, parent;
 
