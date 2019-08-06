@@ -27,16 +27,16 @@ Ext.define('Emergence.store.ChainedTree', {
     },
 
     listeners: {
-        add: function(store, records) {
+        add: function(store, treeRecords) {
             var me = this,
                 sourceStore = me.getSource(),
                 Model = sourceStore.getModel(),
                 fieldsMap = Model.getFieldsMap(),
-                recordsLength = records.length, recordIndex = 0, treeRecord,
+                recordsLength = treeRecords.length, recordIndex = 0, treeRecord,
                 toAdd = [], treeNodeData, data, fieldName, record;
 
             for (; recordIndex < recordsLength; recordIndex++) {
-                treeRecord = records[recordIndex];
+                treeRecord = treeRecords[recordIndex];
 
                 if (treeRecord.isRoot()) {
                     continue;
@@ -69,6 +69,28 @@ Ext.define('Emergence.store.ChainedTree', {
             if (toAdd.length) {
                 sourceStore.add(toAdd);
             }
+        },
+        remove: function(store, treeRecords) {
+            const sourceStore = this.getSource();
+            const toRemove = [];
+
+            for (const treeRecord of treeRecords) {
+                const record = sourceStore.getById(treeRecord.getId());
+
+                if (record) {
+                    toRemove.push(record);
+                }
+            }
+
+            sourceStore.remove(toRemove);
+        },
+        update: function(store, treeRecord, operation, modifiedFieldNames) {
+            if (treeRecord.isRoot()) {
+                return;
+            }
+
+            // debugger;
+            console.info('%s.add', store.id, treeRecord, modifiedFieldNames);
         }
     },
 
@@ -83,7 +105,8 @@ Ext.define('Emergence.store.ChainedTree', {
             scope: this,
             load: 'onSourceLoad',
             update: 'onSourceUpdate',
-            add: 'onSourceAdd'
+            add: 'onSourceAdd',
+            remove: 'onSourceRemove'
         });
 
         var Model = sourceStore.getModel(),
@@ -153,6 +176,20 @@ Ext.define('Emergence.store.ChainedTree', {
         if (toAdd.length) {
             me.add(toAdd);
         }
+    },
+
+    onSourceRemove: function(sourceStore, records) {
+        const toRemove = [];
+
+        for (const record of records) {
+            const treeRecord = this.getById(record.getId());
+
+            if (treeRecord) {
+                toRemove.push(treeRecord);
+            }
+        }
+
+        this.remove(toRemove);
     },
 
     onUpdate: function(record, operation, modifiedFieldNames) {
