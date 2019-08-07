@@ -83,14 +83,6 @@ Ext.define('Emergence.store.ChainedTree', {
             }
 
             sourceStore.remove(toRemove);
-        },
-        update: function(store, treeRecord, operation, modifiedFieldNames) {
-            if (treeRecord.isRoot()) {
-                return;
-            }
-
-            // debugger;
-            console.info('%s.add', store.id, treeRecord, modifiedFieldNames);
         }
     },
 
@@ -103,6 +95,7 @@ Ext.define('Emergence.store.ChainedTree', {
     updateSource: function(sourceStore) {
         sourceStore.on({
             scope: this,
+            beforeload: 'onSourceBeforeLoad',
             load: 'onSourceLoad',
             update: 'onSourceUpdate',
             add: 'onSourceAdd',
@@ -128,6 +121,7 @@ Ext.define('Emergence.store.ChainedTree', {
     },
 
     onSourceLoad: function(sourceStore, records, successful, operation) {
+        this.loadTreeRecords(records);
         this.fireEvent('load', this, records, successful, operation);
     },
 
@@ -239,10 +233,6 @@ Ext.define('Emergence.store.ChainedTree', {
     // member methods
     load: function(options) {
         return this.getSource().load(options);
-    },
-
-    loadIfDirty: function(options) {
-        return this.getSource().loadIfDirty(options);
     },
 
     hasPendingLoad: function() {
