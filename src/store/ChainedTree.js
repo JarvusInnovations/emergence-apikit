@@ -21,8 +21,7 @@ Ext.define('Emergence.store.ChainedTree', {
         defaultRootId: 0,
         root: {
             expanded: true,
-            children: [],
-            leaf: true
+            leaf: false
         }
     },
 
