@@ -21,7 +21,8 @@ Ext.define('Emergence.store.ChainedTree', {
         defaultRootId: 0,
         root: {
             expanded: true,
-            leaf: false
+            leaf: false,
+            loaded: true
         }
     },
 
@@ -111,6 +112,10 @@ Ext.define('Emergence.store.ChainedTree', {
         }
 
         this.setModel(TreeModel);
+
+        if (sourceStore.isLoaded()) {
+            this.loadTreeRecords(sourceStore.getRange());
+        }
     },
 
 
