@@ -132,7 +132,8 @@ Ext.define('Emergence.store.ChainedTree', {
     onSourceUpdate: function (sourceStore, sourceRecord, operation, modifiedFieldNames) {
         var record = this.getById(sourceRecord.getId()),
             fieldsLength, i = 0, fieldName,
-            commit = false;
+            commit = false,
+            set = {};
 
         switch (operation) {
             case Ext.data.Model.COMMIT:
@@ -147,12 +148,10 @@ Ext.define('Emergence.store.ChainedTree', {
 
                 for (; i < fieldsLength; i++) {
                     fieldName = modifiedFieldNames[i];
-                    record.set(fieldName, sourceRecord.get(fieldName));
+                    set[fieldName] = sourceRecord.get(fieldName);
                 }
 
-                if (commit) {
-                    record.commit();
-                }
+                record.set(set, { commit: commit });
                 break;
             case Ext.data.Model.REJECT:
                 if (record) {
@@ -198,7 +197,8 @@ Ext.define('Emergence.store.ChainedTree', {
         var sourceRecord = this.getSource().getById(record.getId()),
             fieldsLen, i = 0, fieldName,
             fieldsMap,
-            commit = false;
+            commit = false,
+            set = {};
 
         switch (operation) {
             case Ext.data.Model.COMMIT:
@@ -215,13 +215,11 @@ Ext.define('Emergence.store.ChainedTree', {
                 for (; i < fieldsLen; i++) {
                     fieldName = modifiedFieldNames[i];
                     if (fieldsMap[fieldName]) {
-                        sourceRecord.set(fieldName, record.get(fieldName));
+                        set[fieldName] = record.get(fieldName);
                     }
                 }
 
-                if (commit) {
-                    sourceRecord.commit();
-                }
+                sourceRecord.set(set, { commit: commit });
                 break;
             case Ext.data.Model.REJECT:
                 if (sourceRecord) {
