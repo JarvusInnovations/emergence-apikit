@@ -261,6 +261,7 @@ Ext.define('Emergence.store.ChainedTree', {
             i = 0, record, parentId, parent;
 
         me.beginUpdate();
+        this.ignoreCollectionAdd = true;
 
         rootNode.removeAll();
 
@@ -278,6 +279,9 @@ Ext.define('Emergence.store.ChainedTree', {
 
         rootNode.expand();
 
+        this.ignoreCollectionAdd = false;
+        me.fireEvent('datachanged', me);
+        me.fireEvent('refresh', me);
         me.endUpdate();
     },
 
