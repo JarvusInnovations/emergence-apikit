@@ -130,7 +130,7 @@ Ext.define('Emergence.store.ChainedTree', {
     },
 
     onSourceUpdate: function (sourceStore, sourceRecord, operation, modifiedFieldNames) {
-        var record = this.getById(sourceRecord.getId()),
+        var record = this.getNodeById(sourceRecord.getId()),
             fieldsLength, i = 0, fieldName,
             commit = false,
             set = {};
@@ -169,7 +169,7 @@ Ext.define('Emergence.store.ChainedTree', {
         for (; recordIndex < recordsLength; recordIndex++) {
             record = records[recordIndex];
 
-            if (!me.getById(record.getId())) {
+            if (!me.getNodeById(record.getId())) {
                 toAdd.push(me.cloneTreeRecord(record));
             }
         }
@@ -183,7 +183,7 @@ Ext.define('Emergence.store.ChainedTree', {
         const toRemove = [];
 
         for (const record of records) {
-            const treeRecord = this.getById(record.getId());
+            const treeRecord = this.getNodeById(record.getId());
 
             if (treeRecord) {
                 toRemove.push(treeRecord);
