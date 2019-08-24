@@ -101,7 +101,8 @@ Ext.define('Emergence.store.ChainedTree', {
             add: 'onSourceAdd',
             remove: 'onSourceRemove',
             beginupdate: 'onSourceBeginUpdate',
-            endupdate: 'onSourceEndUpdate'
+            endupdate: 'onSourceEndUpdate',
+            datachanged: 'onSourceDataChanged'
         });
 
         var Model = sourceStore.getModel(),
@@ -208,6 +209,10 @@ Ext.define('Emergence.store.ChainedTree', {
 
     onSourceEndUpdate: function() {
         this.endUpdate();
+    },
+
+    onSourceDataChanged: function() {
+        this.data.sortItems();
     },
 
     onUpdate: function(record, operation, modifiedFieldNames) {
