@@ -133,6 +133,7 @@ Ext.define('Emergence.store.ChainedTree', {
         var record = this.getNodeById(sourceRecord.getId()),
             fieldsLength, i = 0, fieldName,
             commit = false,
+            dirty = false,
             set = {};
 
         switch (operation) {
@@ -149,9 +150,15 @@ Ext.define('Emergence.store.ChainedTree', {
                 for (; i < fieldsLength; i++) {
                     fieldName = modifiedFieldNames[i];
                     set[fieldName] = sourceRecord.get(fieldName);
+                    dirty = true;
                 }
 
-                record.set(set, { commit: commit });
+                if (dirty) {
+                    record.set(set, { commit: commit });
+                } else if (commit) {
+                    record.commit();
+                }
+
                 break;
             case Ext.data.Model.REJECT:
                 if (record) {
@@ -195,9 +202,10 @@ Ext.define('Emergence.store.ChainedTree', {
 
     onUpdate: function(record, operation, modifiedFieldNames) {
         var sourceRecord = this.getSource().getById(record.getId()),
-            fieldsLen, i = 0, fieldName,
+            fieldsLength, i = 0, fieldName,
             fieldsMap,
             commit = false,
+            dirty = false,
             set = {};
 
         switch (operation) {
@@ -209,17 +217,23 @@ Ext.define('Emergence.store.ChainedTree', {
                     break;
                 }
 
-                fieldsLen = modifiedFieldNames.length;
+                fieldsLength = modifiedFieldNames.length;
                 fieldsMap = sourceRecord.getFieldsMap();
 
-                for (; i < fieldsLen; i++) {
+                for (; i < fieldsLength; i++) {
                     fieldName = modifiedFieldNames[i];
                     if (fieldsMap[fieldName]) {
                         set[fieldName] = record.get(fieldName);
+                        dirty = true;
                     }
                 }
 
-                sourceRecord.set(set, { commit: commit });
+                if (dirty) {
+                    sourceRecord.set(set, { commit: commit });
+                } else if (commit) {
+                    sourceRecord.commit();
+                }
+
                 break;
             case Ext.data.Model.REJECT:
                 if (sourceRecord) {
