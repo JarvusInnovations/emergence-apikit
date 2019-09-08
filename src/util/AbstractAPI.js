@@ -52,6 +52,12 @@ Ext.define('Emergence.util.AbstractAPI', {
             },
             exception: function(response) {
                 Ext.callback(callback, scope, [false, response]);
+            },
+            unauthenticated: function(response) {
+                Ext.callback(callback, scope, [false, response]);
+            },
+            failure: function(response) {
+                Ext.callback(callback, scope, [false, response]);
             }
         });
     },
@@ -85,6 +91,12 @@ Ext.define('Emergence.util.AbstractAPI', {
             },
             exception: function(response) {
                 Ext.callback(callback, scope, [false, response]);
+            },
+            unauthenticated: function(response) {
+                Ext.callback(callback, scope, [false, response]);
+            },
+            failure: function(response) {
+                Ext.callback(callback, scope, [false, response]);
             }
         });
     },
@@ -102,6 +114,12 @@ Ext.define('Emergence.util.AbstractAPI', {
                 this.fireEvent('logout', response.data);
             },
             exception: function(response) {
+                Ext.callback(callback, scope, [false, response]);
+            },
+            unauthenticated: function(response) {
+                Ext.callback(callback, scope, [false, response]);
+            },
+            failure: function(response) {
                 Ext.callback(callback, scope, [false, response]);
             }
         });
